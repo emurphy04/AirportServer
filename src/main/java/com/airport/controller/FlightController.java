@@ -49,6 +49,13 @@ public class FlightController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @GetMapping("/passenger/{id}")
+    public ResponseEntity<Flight> getFlightByPassenger(@PathVariable int id) {
+        Optional<Flight> flight = Optional.ofNullable(flightService.getFlightByPassenger(id));
+        return flight.map(ResponseEntity::ok)
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
     @DeleteMapping("/{id}")
     public void cancelFlight(@PathVariable int id){
         flightService.deleteFlight(id);
