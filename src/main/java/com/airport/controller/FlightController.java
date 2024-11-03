@@ -19,7 +19,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/flights")
 public class FlightController {
 
     @Autowired
@@ -42,26 +41,26 @@ public class FlightController {
         return flightService.getAllFlights();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/flights/{id}")
     public ResponseEntity<Flight> getFlightById(@PathVariable int id) {
         Optional<Flight> flight = flightService.getFlightById(id);
         return flight.map(ResponseEntity::ok)
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping("/passenger/{id}")
+    @GetMapping("/flights/passenger/{id}")
     public ResponseEntity<Flight> getFlightByPassenger(@PathVariable int id) {
         Optional<Flight> flight = Optional.ofNullable(flightService.getFlightByPassenger(id));
         return flight.map(ResponseEntity::ok)
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/flights/{id}")
     public void cancelFlight(@PathVariable int id){
         flightService.deleteFlight(id);
     }
 
-    @PutMapping("/{flight_id}")
+    @PutMapping("/flights/{flight_id}")
     public Flight updateFlight(@PathVariable int flight_id, @RequestBody Map<String, Object> body){
         Flight curr = flightService.getFlightById(flight_id).get();
         curr.setFlightNumber((String) body.get("flightNumber"));
