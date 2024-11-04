@@ -1,5 +1,6 @@
 package com.airport.controller;
 
+import com.airport.model.Airport;
 import com.airport.model.Flight;
 import com.airport.model.Passenger;
 import com.airport.service.AirportService;
@@ -32,8 +33,20 @@ public class FlightController {
     private PassengerService passengerService;
 
     @PostMapping
-    public ResponseEntity<Flight> createFlight(@RequestBody Flight flight) {
-        Flight createdFlight = flightService.createFlight(flight);
+    public ResponseEntity<Flight> createFlight(@RequestBody Map<String, Object> payload) {
+        // Create a new Flight instance
+        Flight flight = new Flight();
+        flight.setFlightNumber((String) payload.get("flightNumber"));
+
+        // Retrieve origin and destination IDs from the payload
+        Integer originAirportId = (Integer) payload.get("origin_airport_id");
+        Integer destinationAirportId = (Integer) payload.get("destination_airport_id");
+
+        // Extract passenger IDs from payload
+        List<Integer> passengerIds = (List<Integer>) payload.get("passengers");
+
+        // Call the service, passing Flight and separate ID values
+        Flight createdFlight = flightService.createFlight(flight, originAirportId, destinationAirportId, passengerIds);
         return new ResponseEntity<>(createdFlight, HttpStatus.CREATED);
     }
 
@@ -62,20 +75,21 @@ public class FlightController {
     }
 
     @PutMapping("/{flight_id}")
-    public Flight updateFlight(@PathVariable int flight_id, @RequestBody Map<String, Object> body){
-        Flight curr = flightService.getFlightById(flight_id).get();
+    public Flight updateFlight(@PathVariable int flight_id, @RequestBody Map<String, Object> body) {
+        // Retrieve the current Flight entity by ID
+        Flight curr = flightService.getFlightById(flight_id)
+                .orElseThrow(() -> new RuntimeException("Flight not found"));
+
+        // Update basic fields
         curr.setFlightNumber((String) body.get("flightNumber"));
-        curr.setOrigin(airportService.getAirportById((Integer) body.get("origin_airport_id")).get());
-        curr.setDestination(airportService.getAirportById((Integer) body.get("destination_airport_id")).get());
-        curr.delPassengers();
-        List<Integer> passenger_ids = (List<Integer>) body.get("passengers");
-        List<Passenger> passengers = new ArrayList<>();
-        for (Integer passengerId : passenger_ids) {
-            passengers.add(passengerService.getPassengerById(passengerId).get());
-        }
-        curr.setPassengers(passengers);
-        flightService.createFlight(curr);
-        return curr;
+
+        // Extract IDs for origin, destination, and passengers
+        Integer originAirportId = (Integer) body.get("origin_airport_id");
+        Integer destinationAirportId = (Integer) body.get("destination_airport_id");
+        List<Integer> passengerIds = (List<Integer>) body.get("passengers");
+
+        // Use createFlight with all required arguments for consistency
+        return flightService.createFlight(curr, originAirportId, destinationAirportId, passengerIds);
     }
 }
 
