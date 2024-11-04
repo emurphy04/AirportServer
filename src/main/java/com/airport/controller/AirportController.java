@@ -51,13 +51,18 @@ public class AirportController {
 
     @DeleteMapping("/airports/{id}")
     public void deleteAirport(@PathVariable int id){
-        City city = cityService.getCityByAirport(id).get();
-        List<Flight> flights = flightService.getFlightByAirport(id);
-        for (int i = 0; i < flights.size(); i++) {
-            int flight_id = flights.get(i).getFlight_id();
-            flightService.deleteFlight(flight_id);
+        try {City city = cityService.getCityByAirport(id).get();
+            city.setAirport(null);
+        } catch (Exception e){
+            System.out.println("No city associated.");
         }
-        city.setAirport(null);
+        try {
+            List<Flight> flights = flightService.getFlightByAirport(id);
+            for (int i = 0; i < flights.size(); i++) {
+                int flight_id = flights.get(i).getFlight_id();
+                flightService.deleteFlight(flight_id);
+            }
+        } catch (Exception e){}
         airportService.deleteAirport(id);
     }
 

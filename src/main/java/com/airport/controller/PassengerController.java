@@ -45,22 +45,22 @@ public class PassengerController {
 
     @DeleteMapping("/passengers/{id}")
     public void deletePassenger(@PathVariable int id){
-        Flight flight = flightService.getFlightByPassenger(id);
-        List<Passenger> passengers = flight.getPassengers();
-
-        for (int i = 0; i < passengers.size(); i++) {
-            try{
-                if (passengers.get(i).getPassenger_id() == id){
-                    passengers.remove(i);
+        try {
+            Flight flight = flightService.getFlightByPassenger(id);
+            List<Passenger> passengers = flight.getPassengers();
+            for (int i = 0; i < passengers.size(); i++) {
+                try {
+                    if (passengers.get(i).getPassenger_id() == id) {
+                        passengers.remove(i);
+                    }
+                } catch (Exception e) {
+                    System.out.println("passenger not found");
                 }
-            } catch (Exception e){
-                System.out.println("passenger not found");
             }
-
+            flight.setPassengers(passengers);
+        } catch (Exception e){
+            System.out.println("Passenger is not on existing flight, safe to delete.");
         }
-
-        flight.setPassengers(passengers);
-
         passengerService.deletePassenger(id);
     }
 
