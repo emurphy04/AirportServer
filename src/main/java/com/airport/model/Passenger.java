@@ -8,7 +8,7 @@ public class Passenger {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int passenger_id;
+    private Integer passenger_id;
 
     private String first_name;
     private String last_name;
@@ -16,18 +16,18 @@ public class Passenger {
 
     public Passenger() {}
 
-    public Passenger(int passenger_id, String first_name, String last_name, String phone_number) {
+    public Passenger(Integer passenger_id, String first_name, String last_name, String phone_number) {
         this.passenger_id = passenger_id;
         this.first_name = first_name;
         this.last_name = last_name;
         this.phone_number = phone_number;
     }
 
-    public int getPassenger_id() {
+    public Integer getPassenger_id() {
         return passenger_id;
     }
 
-    public void setPassenger_id(int passenger_id) {
+    public void setPassenger_id(Integer passenger_id) {
         this.passenger_id = passenger_id;
     }
 

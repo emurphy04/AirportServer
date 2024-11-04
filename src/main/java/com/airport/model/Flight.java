@@ -1,5 +1,7 @@
 package com.airport.model;
 
+import com.airport.deserializer.PassengerIdDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ public class Flight {
             joinColumns = @JoinColumn(name = "flight_id"),
             inverseJoinColumns = @JoinColumn(name = "passenger_id")
     )
+    @JsonDeserialize(using = PassengerIdDeserializer.class)
     private List<Passenger> passengers = new ArrayList<>();
 
     public Flight() {}

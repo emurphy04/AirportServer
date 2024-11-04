@@ -25,22 +25,24 @@ public class FlightService {
     @Autowired
     private PassengerRepo passengerRepo;
 
-    public Flight createFlight(Flight flight) {
-        Airport origin = airportRepo.findById(flight.getOrigin().getAirport_id())
+    public Flight createFlight(Flight flight, Integer originAirportId, Integer destinationAirportId, List<Integer> passengerIds) {
+        // Retrieve and set the origin and destination airports
+        Airport origin = airportRepo.findById(originAirportId)
                 .orElseThrow(() -> new RuntimeException("Origin airport not found"));
-
-        Airport destination = airportRepo.findById(flight.getDestination().getAirport_id())
+        Airport destination = airportRepo.findById(destinationAirportId)
                 .orElseThrow(() -> new RuntimeException("Destination airport not found"));
-
         flight.setOrigin(origin);
         flight.setDestination(destination);
 
-        List<Passenger> passengers = flight.getPassengers().stream()
-                .map(p -> passengerRepo.findById(p.getPassenger_id())
-                        .orElseThrow(() -> new RuntimeException("Passenger not found")))
+        // Clear existing passengers (if updating) and set new ones based on provided IDs
+        flight.delPassengers();
+        List<Passenger> passengers = passengerIds.stream()
+                .map(id -> passengerRepo.findById(id)
+                        .orElseThrow(() -> new RuntimeException("Passenger not found for ID: " + id)))
                 .toList();
         flight.setPassengers(passengers);
 
+        // Save and return the populated or updated Flight
         return flightRepo.save(flight);
     }
 
